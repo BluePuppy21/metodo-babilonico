@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- region Spring configuration (in case that you want to use Spring to manage your project)-->
+    <parent>
+        <groupId>org.andreavzznnz</groupId>
+        <artifactId>heronsmethod</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <!--endregion-->
+
+    <!-- region Your particular project data -->
+    <groupId>org.andreavzznnz</groupId>
+    <artifactId>heronsmethod</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>The Babylonian method (also known as Heron's method) is an iterative algorithm used to approximate the square root of a number. Starting with an initial guess, the method refines the estimate by averaging the guess with the result of dividing the original number by that guess. Repeating this process quickly converges to an accurate approximation of the square root. It’s an efficient technique for finding square roots without advanced calculations. This will help you to implement it.</description>
+    <!-- This section (packaging) can be defined if the project is meant to be a desktop application or a JAR will be generated. -->
+    <packaging>jar</packaging>
+    <!--endregion-->
+
+    <properties>
+        <!-- region Configure Java version & Main full package and class name -->
+        <!-- WARNING: add release scope if 1.9 and older versions are used at build/plugins/plugin/[maven-compiler-plugin]/configuration-->
+        <java.version>23</java.version>
+        <main.class>${project.groupId}.white_template.WhiteTemplate</main.class>
+        <!--endregion-->
+        <!-- region General configurations of the project -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <!-- In case the compiling device doesn't have docker installed you can create the docker img with Jib -->
+<!--        <jkube.build.strategy>jib</jkube.build.strategy>-->
+        <!-- endregion General configurations of the project -->
+        <junit.jupiter.version>5.9.2</junit.jupiter.version>
+        <junit.platform.version>1.3.2</junit.platform.version>
+        <surefire.failsafe.plugin.version>3.0.0-M8</surefire.failsafe.plugin.version>
+        <surefire.version>2.22.2</surefire.version>
+        <skipTests>false</skipTests>
+        <skipITs>${skipTests}</skipITs>
+        <skipUTs>${skipTests}</skipUTs>
+        <logs.path>${project.build.directory}/test-reports/logs</logs.path>
+    </properties>
+
+    <build>
+<!--        <finalName>${project.artifactId}</finalName>-->
+        <plugins>
+            <!-- region Established the java version defined in the properties' section for every scope (compatible with newer java versions) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <!-- WARNING: add release property for 1.9 and older versions -->
+                    <release>${java.version}</release>
+                </configuration>
+            </plugin>
+            <!-- endregion -->
+
+            <!-- region Builds an *executable* JAR on package goal -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.4.2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass> ${main.class} </mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <!-- endregion -->
+            <!-- region surefire-report Generates an HTML report -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${surefire.failsafe.plugin.version}</version>
+                <configuration>
+<!--                    <reportsDirectories>${logs.path}</reportsDirectories>-->
+                    <reportsDirectories>
+                        <reportsDirectory>${logs.path}</reportsDirectory>
+                    </reportsDirectories>
+                </configuration>
+            </plugin>
+            <!-- endregion surefire-report Generates an HTML report -->
+
+            <!-- endregion -->
+
+            <!-- region Maven runs Integration Tests -->
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${surefire.failsafe.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <reportsDirectory>${logs.path}</reportsDirectory>
+                    <!--suppress MavenModelInspection -->
+                    <excludedGroups>${excluded.tags}</excludedGroups>
+                    <!-- override sufrefire plugins behaviors, provided by: https://stackoverflow.com/questions/6612344/prevent-unit-tests-but-allow-integration-tests-in-maven#:~:text=%20%3Cskiptests%3E%24%7Bskiptests%7D%3C%2Fskiptests%3E%20%3Cskipits%3E%24%7Bskipits%7D%3C%2Fskipits%3E -->
+                    <skipTests>${skipTests}</skipTests>
+                    <skipITs>${skipITs}</skipITs>
+                </configuration>
+            </plugin>
+            <!-- endregion Maven runs Integration Tests -->
+
+            <!-- region Docker Generation -->
+            <!-- You won't require the Dockerfile to generate the docker image manually,
+                and you can just use `docker compose -[delete me]-project-directory src\main\docker up` to run the image -->
+            <plugin>
+                <groupId>org.eclipse.jkube</groupId>
+                <artifactId>kubernetes-maven-plugin</artifactId>
+                <version>1.10.1</version>
+            </plugin>
+            <!-- endregion Docker Generation -->
+
+        </plugins>
+    </build>
+
+</project>
