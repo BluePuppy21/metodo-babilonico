@@ -4,15 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- region Spring configuration (in case that you want to use Spring to manage your project)-->
-    <parent>
-        <groupId>org.andreavzznnz</groupId>
-        <artifactId>heronsmethod</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
-    <!--endregion-->
-
     <!-- region Your particular project data -->
     <groupId>org.andreavzznnz</groupId>
     <artifactId>heronsmethod</artifactId>
@@ -27,7 +18,7 @@
         <!-- region Configure Java version & Main full package and class name -->
         <!-- WARNING: add release scope if 1.9 and older versions are used at build/plugins/plugin/[maven-compiler-plugin]/configuration-->
         <java.version>23</java.version>
-        <main.class>${project.groupId}.white_template.WhiteTemplate</main.class>
+        <main.class>${project.groupId}.heronsmethod.HeronsMethod</main.class>
         <!--endregion-->
         <!-- region General configurations of the project -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
